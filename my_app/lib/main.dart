@@ -1,31 +1,30 @@
+// simple_navigator
 import 'package:flutter/material.dart';
 
-class MyAppBar extends StatelessWidget {
-  MyAppBar({this.title});
+void main() {
+  runApp(MaterialApp(
+    initialRoute: '/',
+    routes: <String, WidgetBuilder>{
+      '/': (BuildContext context) => MyAppHome(),
+      '/signup': (BuildContext context) => SignUpPage(),
+    },
+  ));
+}
 
-  // Fields in a Widget subclass are always marked "final".
-
-  final Widget title;
-
+class MyAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56.0, // in logical pixels
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(color: Colors.blue[500]),
-      // Row is a horizontal, linear layout.
-      child: Row(
-        // <Widget> is the type of items in the list.
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.menu),
-            tooltip: 'Navigation menu',
-            onPressed: null, // null disables the button
-          ),
-          // Expanded expands its child to fill the available space.
-          Expanded(
-            child: title,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          tooltip: 'Navigation menu',
+          onPressed: () {
+            Navigator.pushNamed(context, '/signup');
+          },
+        ),
+        title: Text('Example title'),
+        actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
             tooltip: 'Search',
@@ -33,40 +32,92 @@ class MyAppBar extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class MyScaffold extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // Material is a conceptual piece of paper on which the UI appears.
-    return Material(
-      // Column is a vertical, linear layout.
-      child: Column(
-        children: <Widget>[
-          MyAppBar(
-            title: Text(
-              'Example title',
-              style: Theme.of(context).primaryTextTheme.headline6,
-            ),
-          ),
-          Expanded(
-              child: Container(
-            color: Colors.amber,
-            child: Center(
-              child: Text('Hello, world!'),
-            ),
-          ))
-        ],
+      body: Center(
+        child: Text('Hello, world!'),
       ),
     );
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    title: 'My app', // used by the OS task switcher
-    home: MyScaffold(),
-  ));
+class SignUpPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // SignUpPage builds its own Navigator which ends up being a nested
+    // Navigator in our app.
+    return Navigator(
+      initialRoute: 'signup/personal_info',
+      onGenerateRoute: (RouteSettings settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case 'signup/personal_info':
+            // Assume CollectPersonalInfoPage collects personal info and then
+            // navigates to 'signup/choose_credentials'.
+            builder = (BuildContext _) => CollectPersonalInfoPage();
+            break;
+          case 'signup/choose_credentials':
+            // Assume ChooseCredentialsPage collects new credentials and then
+            // invokes 'onSignupComplete()'.
+            builder = (BuildContext _) => ChooseCredentialsPage(
+                  onSignupComplete: () {
+                    // Referencing Navigator.of(context) from here refers to the
+                    // top level Navigator because SignUpPage is above the
+                    // nested Navigator that it created. Therefore, this pop()
+                    // will pop the entire "sign up" journey and return to the
+                    // "/" route, AKA HomePage.
+                    Navigator.of(context).pop();
+                  },
+                );
+            break;
+          default:
+            throw Exception('Invalid route: ${settings.name}');
+        }
+        return MaterialPageRoute(builder: builder, settings: settings);
+      },
+    );
+  }
+}
+
+class CollectPersonalInfoPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+      style: Theme.of(context).textTheme.headline4,
+      child: GestureDetector(
+        onTap: () {
+          // This moves from the personal info page to the credentials page,
+          // replacing this page with that one.
+          Navigator.of(context)
+              .pushReplacementNamed('signup/choose_credentials');
+        },
+        child: Container(
+          color: Colors.lightBlue,
+          alignment: Alignment.center,
+          child: Text('Collect Personal Info Page'),
+        ),
+      ),
+    );
+  }
+}
+
+class ChooseCredentialsPage extends StatelessWidget {
+  const ChooseCredentialsPage({
+    this.onSignupComplete,
+  });
+
+  final VoidCallback onSignupComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onSignupComplete,
+      child: DefaultTextStyle(
+        style: Theme.of(context).textTheme.headline4,
+        child: Container(
+          color: Colors.pinkAccent,
+          alignment: Alignment.center,
+          child: Text('Choose Credentials Page'),
+        ),
+      ),
+    );
+  }
 }
