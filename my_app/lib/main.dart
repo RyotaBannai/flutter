@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,61 +18,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class RandomWords extends StatefulWidget {
-  @override
-  _RandomWordsState createState() => _RandomWordsState();
-}
-
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _biggerFont = TextStyle(fontSize: 18.0);
-  @override
-  Widget build(BuildContext context) {
-    return _buildSuggestions();
-  }
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
-          final index = i ~/ 2;
-          print('index $index');
-          print(_suggestions.length);
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(5));
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-    );
-  }
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(this.title),
       ),
-      body: Center(
-        child: RandomWords(),
+      body: Stack(
+        children: [
+          Container(width: 100, height: 100, color: Colors.red),
+          Container(
+            width: 90,
+            height: 90,
+            color: Colors.green,
+          ),
+          Container(
+            width: 80,
+            height: 80,
+            color: Colors.blue,
+          ),
+        ],
+        @override
+MultiChildRenderObjectElement createElement() => MultiChildRenderObjectElement(this);
       ),
     );
   }
