@@ -1,126 +1,72 @@
-// _stack_absolute_postion
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class MyAppBar extends StatelessWidget {
+  MyAppBar({this.title});
 
-class MyApp extends StatelessWidget {
+  // Fields in a Widget subclass are always marked "final".
+
+  final Widget title;
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Stack(
-        children: [
-          WidA(),
-          Positioned(
-            top: 10.0,
-            left: 10.0,
-            width: 100.0,
-            height: 100.0,
-            child: WidB(),
+    return Container(
+      height: 56.0, // in logical pixels
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(color: Colors.blue[500]),
+      // Row is a horizontal, linear layout.
+      child: Row(
+        // <Widget> is the type of items in the list.
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.menu),
+            tooltip: 'Navigation menu',
+            onPressed: null, // null disables the button
           ),
-          Positioned(
-            top: 10.0,
-            right: 10.0,
-            width: 100.0,
-            height: 100.0,
-            child: WidC(),
+          // Expanded expands its child to fill the available space.
+          Expanded(
+            child: title,
           ),
-          Positioned(
-            bottom: 10.0,
-            left: 10.0,
-            width: 100.0,
-            height: 100.0,
-            child: WidD(),
+          IconButton(
+            icon: Icon(Icons.search),
+            tooltip: 'Search',
+            onPressed: null,
           ),
-          Positioned(
-            bottom: 10.0,
-            right: 10.0,
-            width: 100.0,
-            height: 100.0,
-            child: WidE(),
-          )
         ],
       ),
     );
   }
 }
 
-class WidA extends StatelessWidget {
+class MyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment(0.0, 0.0),
-      color: Colors.white70,
-      child: Text('Widget A'),
+    // Material is a conceptual piece of paper on which the UI appears.
+    return Material(
+      // Column is a vertical, linear layout.
+      child: Column(
+        children: <Widget>[
+          MyAppBar(
+            title: Text(
+              'Example title',
+              style: Theme.of(context).primaryTextTheme.headline6,
+            ),
+          ),
+          Expanded(
+              child: Container(
+            color: Colors.amber,
+            child: Center(
+              child: Text('Hello, world!'),
+            ),
+          ))
+        ],
+      ),
     );
   }
 }
 
-class WidB extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment(0.0, 0.0),
-      color: Colors.lightGreen,
-      child: Text('Widget B'),
-    );
-  }
-}
-
-class WidC extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment(0.0, 0.0),
-      color: Colors.amber,
-      child: Text('Widget C'),
-    );
-  }
-}
-
-class WidD extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment(0.0, 0.0),
-      color: Colors.blueGrey,
-      child: Text('Widget D'),
-    );
-  }
-}
-
-class WidE extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment(0.0, 0.0),
-      color: Colors.teal,
-      child: Text('Widget D'),
-    );
-  }
+void main() {
+  runApp(MaterialApp(
+    title: 'My app', // used by the OS task switcher
+    home: MyScaffold(),
+  ));
 }
